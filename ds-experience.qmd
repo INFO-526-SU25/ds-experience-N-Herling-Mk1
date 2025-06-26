@@ -141,7 +141,10 @@ document.addEventListener('DOMContentLoaded', () => {
   <button id="toggleAnimationBtn">Pause</button>
 </div>
 
-
+<div class="file-link-container">
+  <a class="file-tile-3d" href="Data Science Experience_NTH.pdf" target="_blank">Go to .pdf version</a>
+  <a class="file-tile-3d" href="DS_experience_NTH.pptx" target="_blank">Go to .pptx version</a>
+</div>
 
 <!-- main part of document -->
 -   [Part 1: Experience data science outside of the classroom](#part-1-experience-data-science-outside-of-the-classroom)

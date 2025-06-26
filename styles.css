@@ -120,3 +120,64 @@ filter#glow feDropShadow {
   flood-opacity: 0.8;
   stdDeviation: 3;
 }
+
+/* ----- wobble tiles ----- */
+.file-link-container {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  margin: 2rem 0;
+  perspective: 1200px;
+}
+
+.file-tile-3d {
+  display: inline-block;
+  padding: 14px 24px;
+  border-radius: 10px;
+  background-color: #f0f8ff;
+  border: 2px solid #32cd32; /* lime green */
+  color: #222;
+  font-weight: bold;
+  text-decoration: none;
+  font-family: sans-serif;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transform-style: preserve-3d;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+}
+
+/* Glowing green fuzz background during hover */
+.file-tile-3d::after {
+  content: '';
+  position: absolute;
+  top: -40%;
+  left: -40%;
+  width: 180%;
+  height: 180%;
+  background: radial-gradient(circle, rgba(0, 255, 128, 0.35), transparent 80%);
+  opacity: 0;
+  border-radius: 50%;
+  z-index: -1;
+  transition: opacity 0.4s ease;
+  filter: blur(20px);
+}
+
+.file-tile-3d:hover::after {
+  opacity: 1;
+}
+
+.file-tile-3d:hover {
+  animation: precess3D 1s ease-out;
+}
+
+@keyframes precess3D {
+  0%   { transform: rotateX(0deg) rotateY(0deg); }
+  15%  { transform: rotateX(18deg) rotateY(14deg); }
+  30%  { transform: rotateX(12deg) rotateY(-20deg); }
+  50%  { transform: rotateX(-20deg) rotateY(-12deg); }
+  70%  { transform: rotateX(-14deg) rotateY(18deg); }
+  85%  { transform: rotateX(10deg) rotateY(-8deg); }
+  100% { transform: rotateX(0deg) rotateY(0deg); }
+}
