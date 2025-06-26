@@ -1,27 +1,184 @@
 ---
 title: "Data Science Experience"
-subtitle: "<Name of the Experience>"
-author: "Add your name here"
-categories: "Lab"
+subtitle: "Book: The Signal and the Noise: Why So Many Predictions Fail--but Some Don't\nAuthor: Nate Silver"
+author: "Nathan Herling"
+categories: "DS - experience"
 
+format:
+  html:
+    css: styles.css
 ---
 
+<!-- Let's have some fun and do some data science visualizing 
+.
+create a 'TV static box' (shout out to cosmic background radiation)
+overlay it with a sine wave that represents signal/noise.
+Sine wave transitions from sig->noise in animation.
+[play/pause is provided]
+-->
+```{=html}
+<div class="tv-static-container">
 
+  <!-- Signal/noise readout -->
+  <div class="signal-indicator" id="sn-indicator">Signal: 0% | Noise: 100%</div>
+
+  <!-- TV Static Background -->
+  <svg class="tv-static-layer" viewBox="0 0 300 150" preserveAspectRatio="none">
+    <defs>
+      <filter id="tvStaticFilter">
+        <feTurbulence id="turb" type="fractalNoise" baseFrequency="0.8" numOctaves="4" result="noise" />
+        <feColorMatrix in="noise" type="saturate" values="0" />
+      </filter>
+    </defs>
+    <rect />
+    <animate xlink:href="#turb" attributeName="seed" from="1" to="100" dur="1s" repeatCount="indefinite" />
+  </svg>
+
+  <!-- Signal Waveform -->
+  <svg class="signal-wave" viewBox="0 0 300 150" preserveAspectRatio="none">
+    <path id="sineWave" d="" />
+    <defs>
+      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#00ff7f" flood-opacity="0.8"/>
+      </filter>
+    </defs>
+  </svg>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const path = document.getElementById('sineWave');
+  const indicator = document.getElementById('sn-indicator');
+  const toggleBtn = document.getElementById('toggleAnimationBtn');
+
+  // Set initial button text to 'Play' on load
+  toggleBtn.textContent = 'Play';
+
+  const width = 300;
+  const height = 150;
+  const centerY = height / 2;
+  const amplitude = 25;
+  const frequency = 2;
+  const points = 100;
+
+  const frames = 400;  // total animation steps
+  let frame = 0;
+  let isPlaying = false;  // start paused
+  let animationId = null;
+
+  function computeCleanWave() {
+    const step = width / (points - 1);
+    return Array.from({ length: points }, (_, i) => {
+      const x = i * step;
+      const y = centerY + amplitude * Math.sin((i / points) * frequency * Math.PI * 2);
+      return { x, y };
+    });
+  }
+
+  function addNoiseToWave(cleanWave, noiseLevel) {
+    return cleanWave.map(pt => ({
+      x: pt.x,
+      y: pt.y + (Math.random() - 0.5) * 2 * amplitude * noiseLevel
+    }));
+  }
+
+  function buildPath(points) {
+    return points.reduce(
+      (d, pt, i) => d + (i === 0 ? `M ${pt.x} ${pt.y}` : ` L ${pt.x} ${pt.y}`), ''
+    );
+  }
+
+  const cleanWave = computeCleanWave();
+
+  function animateWave() {
+    if (!isPlaying) {
+      animationId = null;
+      return;  // stop animation loop if paused
+    }
+
+    const halfFrames = frames / 2;
+    let progress = frame <= halfFrames
+      ? frame / halfFrames        // progress from 0 -> 1
+      : (frames - frame) / halfFrames; // then 1 -> 0
+
+    const noiseLevel = progress;  // noise ping-pong from 0 to 1 and back
+
+    const noisyWave = addNoiseToWave(cleanWave, noiseLevel);
+    const d = buildPath(noisyWave);
+    path.setAttribute('d', d);
+
+    const signal = Math.round((1 - noiseLevel) * 100);
+    const noise = 100 - signal;
+    indicator.textContent = `Signal: ${signal}% | Noise: ${noise}%`;
+
+    const bg = document.querySelector('.noise');
+    if (bg) bg.style.opacity = noiseLevel.toFixed(2);
+
+    frame++;
+    if (frame > frames) frame = 0;
+
+    animationId = requestAnimationFrame(animateWave);
+  }
+
+  // Start the animation loop on page load, but paused
+  animateWave();
+
+  // Button event to toggle play/pause
+  toggleBtn.addEventListener('click', () => {
+    isPlaying = !isPlaying;
+    toggleBtn.textContent = isPlaying ? 'Pause' : 'Play';
+
+    if (isPlaying && animationId === null) {
+      animateWave();
+    }
+  });
+});
+
+
+
+</script>
+
+<div style="text-align:center; margin-top: 1rem;">
+  <button id="toggleAnimationBtn">Pause</button>
+</div>
+
+
+
+<!-- main part of document -->
 -   [Part 1: Experience data science outside of the classroom](#part-1-experience-data-science-outside-of-the-classroom)
+
 
 -   [Part 2: Summarize your experience](#part-2-summarize-your-experience)
 
 -   [Submission](#submission)
 
 
-## Part 1: Experience data science outside of the classroom {#part-1-experience-data-science-outside-of-the-classroom}
+## Part 1: Experience data science outside of the classroom 
 
-Give the information for the experience. 
+<div class="nice-text-box">
+<br>My Data Science (DS) experience was<br>
+<i>Category 5: Read a book on statistics/data sciencereading</i><br>the book: <br><b>The Signal and the Noise: Why So Many Predictions Fail--but Some Don't<br>Author: Nate Silver</b>
+
+Nice sampling of chapters:<br>
+<div class="sweep-container">
+  <a href="https://www.bookrags.com/studyguide-the-signal-and-the-noise/chapanal001.html?utm_source=chatgpt.com#gsc.tab=0" class="fancy-link" target="_blank">
+    Read Chapter Summary on BookRags
+  </a>
+  </div>
+</div>
 
 ## Part 2: Summarize your experience {#part-2-summarize-your-experience}
 
-Summary: 
+<div class="nice-text-box">
+<b>Summary:</b><br> 
+The book is a treatise on decision making, specifically forecasting of events. The path taken by the author uses failures such as the economic crisis of 2008, and successes such as hitting a baseball to frame decision making algorithmicaly.<br>
+Beginning with the dictate that people are generally too overconfident in their own prognostiction, but predictive models by themselves aren't enough to guarantee success. The author eventually iterates towards the idea that Bayesian probabilistic models are the best tactic when determining predictions with complex or divergent phenomena.
 
+Ultimately, The Signal and the Noise reminds us that good forecasting is not about certainty, but about disciplined humility—acknowledging what we don't know and being willing to revise our views as new data emerges. By advocating for Bayesian thinking, Silver offers a framework that values adaptability over bravado, and learning over guessing. In a world overwhelmed by noise, this mindset is both practical and necessary.<br>
+<b>Something new?:</b>
+This book was sort of a 'Malcolm Gladwell' cross-culture synthesis and synopsis of model usage, user error, user intelligence, and model limitation. So, the overall synthesis was new and exciting.<br>
+<b>Connect to class:</b>
+The idea of data presentation not being in concert with deductions being made from the data was covered in the book - as it has been coverred in the class.
+</div>
 
 ## Submission {#submission}
 
