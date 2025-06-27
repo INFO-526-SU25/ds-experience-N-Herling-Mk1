@@ -1,61 +1,64 @@
 /* ----------------------------------------
-   Link Styles (Reset to normal)
+   Basic Layout + Typography
 ---------------------------------------- */
-
-
 .nice-text-box {
-  background-color: #f0f0f0;       /* light grey background */
-  border: 1.5px solid #7FFFD4;   /* thin steel blue border */
-  border-radius: 12px;             /* nicely rounded corners */
-  padding: 12px 20px;              /* comfortable padding */
-  color: #333;                    /* dark grey text for readability */
-  width: 100%;                /* optional max width */
-  font-family: Arial, sans-serif; /* clean font */
+  background-color: #f0f0f0;
+  border: 1.5px solid #7FFFD4;
+  border-radius: 12px;
+  padding: 12px 20px;
+  color: #333;
+  width: 100%;
+  font-family: Arial, sans-serif;
   box-sizing: border-box;
-  margin: 1rem auto;               /* center horizontally with margin */
-  user-select: text;               /* allow text selection */
+  margin: 1rem auto;
+  user-select: text;
 }
 
-
-
-/* Base link styling */
+/* ----------------------------------------
+   Anchor Link Styles
+---------------------------------------- */
 a {
   text-decoration: underline;
   font-weight: normal;
-  position: static;
-  overflow: visible;
-  background-clip: border-box;
-  -webkit-background-clip: border-box;
-  -webkit-text-fill-color: initial;
-  transition: color 0.3s ease;
   color: #1a73e8;
-  border-bottom: none;
+  transition: color 0.3s ease;
 }
 
-/* Remove shimmer overlay */
-a::before {
-  content: none;
-  position: static;
-  background: none;
-  animation: none;
-  pointer-events: auto;
-  z-index: auto;
-}
-
-/* Hover behavior for link */
 a:hover {
   color: #0b5394;
-  border-bottom: none;
-  background-color: transparent;
-  -webkit-text-fill-color: initial;
   text-decoration: underline;
 }
 
-/* Remove fancy-link styles entirely */
-.fancy-link {
-  all: unset;
-  color: #1a73e8;
+/* ----------------------------------------
+   Button Container Styling
+---------------------------------------- */
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 1.5rem auto 1rem;
+  padding: 1rem 1.5rem;
+  background-color: rgba(173, 216, 230, 0.3); /* light blue tint */
+  border-radius: 12px;
+  width: fit-content;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.button-container button {
+  font-family: sans-serif;
+  font-weight: bold;
+  padding: 10px 16px;
+  font-size: 14px;
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button-container button:hover {
+  background-color: #0b5394;
 }
 
 /* ----------------------------------------
@@ -99,7 +102,6 @@ a:hover {
   stroke-width: 2;
   fill: none;
   filter: url(#glow);
-  transition: none;
 }
 
 .signal-indicator {
@@ -121,11 +123,13 @@ filter#glow feDropShadow {
   stdDeviation: 3;
 }
 
-/* ----- wobble tiles ----- */
+/* ----------------------------------------
+   File Tile Buttons (Ripple + Wobble)
+---------------------------------------- */
 .file-link-container {
   display: flex;
-  gap: 1.5rem;
   justify-content: center;
+  gap: 5rem;
   margin: 2rem 0;
   perspective: 1200px;
 }
@@ -135,40 +139,74 @@ filter#glow feDropShadow {
   padding: 14px 24px;
   border-radius: 10px;
   background-color: #f0f8ff;
-  border: 2px solid #32cd32; /* lime green */
+  border: 2px solid #32cd32;
   color: #222;
   font-weight: bold;
   text-decoration: none;
   font-family: sans-serif;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
   transform-style: preserve-3d;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
   position: relative;
-  z-index: 1;
-  overflow: visible;
+  overflow: hidden;
+  isolation: isolate;
+  cursor: pointer;
+
+  /* ✅ Unified transitions */
+  transition:
+    background-color 1s ease,
+    border-color 1s ease,
+    box-shadow 1s ease,
+    transform 0.3s ease;
 }
 
-/* Glowing green fuzz background during hover */
+
+/* Glowing green fuzz background */
 .file-tile-3d::after {
   content: '';
   position: absolute;
-  top: -40%;
-  left: -40%;
-  width: 180%;
-  height: 180%;
+  top: 50%;
+  left: 50%;
+  width: 200%;
+  height: 200%;
   background: radial-gradient(circle, rgba(0, 255, 128, 0.35), transparent 80%);
   opacity: 0;
   border-radius: 50%;
   z-index: -1;
-  transition: opacity 0.4s ease;
   filter: blur(20px);
+  pointer-events: none;
+
+  /* 👇 Slow spread via scale + fade */
+  transform: translate(-50%, -50%) scale(0.6);
+  transition:
+    transform 1.2s ease,
+    opacity 1.2s ease;
 }
 
 .file-tile-3d:hover::after {
   opacity: 1;
+  transform: translate(-50%, -50%) scale(2); /* 👈 grows outward */
 }
 
-.file-tile-3d:hover {
+/* Ripple effect element */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(50, 205, 50, 0.4);
+  transform: scale(0);
+  animation: ripple-animate 0.6s ease-out;
+  pointer-events: none;
+  z-index: 2;
+}
+
+@keyframes ripple-animate {
+  to {
+    transform: scale(8);
+    opacity: 0;
+  }
+}
+
+/* Wobble animation on click */
+.file-tile-3d.wobble {
   animation: precess3D 1s ease-out;
 }
 

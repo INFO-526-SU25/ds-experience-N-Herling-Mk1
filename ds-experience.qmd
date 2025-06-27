@@ -44,13 +44,14 @@ Sine wave transitions from sig->noise in animation.
     </defs>
   </svg>
 </div>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+  // --- Signal + Noise Wave Animation ---
   const path = document.getElementById('sineWave');
   const indicator = document.getElementById('sn-indicator');
   const toggleBtn = document.getElementById('toggleAnimationBtn');
 
-  // Set initial button text to 'Play' on load
   toggleBtn.textContent = 'Play';
 
   const width = 300;
@@ -59,12 +60,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const amplitude = 25;
   const frequency = 2;
   const points = 100;
+  const frames = 400;
 
-  const frames = 400;  // total animation steps
   let frame = 0;
-  let isPlaying = false;  // start paused
+  let isPlaying = false;
   let animationId = null;
 
+  // Generate clean sine wave
   function computeCleanWave() {
     const step = width / (points - 1);
     return Array.from({ length: points }, (_, i) => {
@@ -74,37 +76,34 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function addNoiseToWave(cleanWave, noiseLevel) {
-    return cleanWave.map(pt => ({
+  const cleanWave = computeCleanWave();
+
+  // Add noise to sine wave
+  function addNoiseToWave(clean, noiseLevel) {
+    return clean.map(pt => ({
       x: pt.x,
       y: pt.y + (Math.random() - 0.5) * 2 * amplitude * noiseLevel
     }));
   }
 
+  // Convert points to SVG path string
   function buildPath(points) {
-    return points.reduce(
-      (d, pt, i) => d + (i === 0 ? `M ${pt.x} ${pt.y}` : ` L ${pt.x} ${pt.y}`), ''
-    );
+    return points.reduce((d, pt, i) => d + (i === 0 ? `M ${pt.x} ${pt.y}` : ` L ${pt.x} ${pt.y}`), '');
   }
 
-  const cleanWave = computeCleanWave();
-
+  // Animate wave path and update signal/noise indicator
   function animateWave() {
     if (!isPlaying) {
       animationId = null;
-      return;  // stop animation loop if paused
+      return;
     }
 
     const halfFrames = frames / 2;
-    let progress = frame <= halfFrames
-      ? frame / halfFrames        // progress from 0 -> 1
-      : (frames - frame) / halfFrames; // then 1 -> 0
-
-    const noiseLevel = progress;  // noise ping-pong from 0 to 1 and back
+    const progress = frame <= halfFrames ? frame / halfFrames : (frames - frame) / halfFrames;
+    const noiseLevel = progress;
 
     const noisyWave = addNoiseToWave(cleanWave, noiseLevel);
-    const d = buildPath(noisyWave);
-    path.setAttribute('d', d);
+    path.setAttribute('d', buildPath(noisyWave));
 
     const signal = Math.round((1 - noiseLevel) * 100);
     const noise = 100 - signal;
@@ -119,21 +118,75 @@ document.addEventListener('DOMContentLoaded', () => {
     animationId = requestAnimationFrame(animateWave);
   }
 
-  // Start the animation loop on page load, but paused
-  animateWave();
+  animateWave(); // Start paused by default
 
-  // Button event to toggle play/pause
   toggleBtn.addEventListener('click', () => {
     isPlaying = !isPlaying;
     toggleBtn.textContent = isPlaying ? 'Pause' : 'Play';
+    if (isPlaying && animationId === null) animateWave();
+  });
 
-    if (isPlaying && animationId === null) {
-      animateWave();
-    }
+  // --- File Tile Effects ---
+  const tiles = document.querySelectorAll('.file-tile-3d');
+
+  tiles.forEach(tile => {
+    const href = tile.getAttribute('href');
+
+    // Ripple on hover (mouseenter)
+    tile.addEventListener('mouseenter', e => {
+      const ripple = document.createElement('span');
+      ripple.classList.add('ripple');
+
+      const rect = tile.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      ripple.style.width = ripple.style.height = `${size}px`;
+      ripple.style.left = `${rect.width / 2 - size / 2}px`;
+      ripple.style.top = `${rect.height / 2 - size / 2}px`;
+
+      tile.appendChild(ripple);
+      ripple.addEventListener('animationend', () => ripple.remove());
+    });
+
+    // Click: Wobble animation, then delayed navigation
+    tile.addEventListener('click', event => {
+      if (href) {
+        event.preventDefault(); // Prevent immediate jump
+      }
+
+      // Wobble animation
+      tile.classList.remove('wobble'); // reset if already playing
+      void tile.offsetWidth; // force reflow
+      tile.classList.add('wobble');
+
+      // Add ripple on click location
+      const clickRipple = document.createElement('span');
+      clickRipple.classList.add('ripple');
+
+      const rect = tile.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = event.clientX - rect.left - size / 2;
+      const y = event.clientY - rect.top - size / 2;
+
+      clickRipple.style.width = clickRipple.style.height = `${size}px`;
+      clickRipple.style.left = `${x}px`;
+      clickRipple.style.top = `${y}px`;
+
+      tile.appendChild(clickRipple);
+      clickRipple.addEventListener('animationend', () => clickRipple.remove());
+
+      // Navigate after 0.5s delay (post-wobble)
+      if (href) {
+        setTimeout(() => {
+          if (href.endsWith('.pdf')) {
+            window.open(href, '_blank'); // open PDF in new tab
+          } else {
+            window.location.href = href; // normal navigation
+          }
+        }, 500);
+      }
+    });
   });
 });
-
-
 
 </script>
 
